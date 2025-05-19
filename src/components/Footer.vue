@@ -14,7 +14,16 @@ export default defineComponent({
     <footer class="footer">
         <div class="footer-content">
             <div class="looker-info">
-                <p>Looking for more data? You can still access additional insights in <a href="https://results.tabu.hr/" target="_blank" rel="noopener noreferrer">Looker Studio</a>.</p>
+                <p>
+                    Looking for more data? You can still access additional
+                    insights in
+                    <a
+                        href="https://results.tabu.hr/"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        >Looker Studio</a
+                    >.
+                </p>
             </div>
             <div class="version-display-container">
                 <div class="version-info">
@@ -22,7 +31,13 @@ export default defineComponent({
                         <VersionDisplay context="results" show-label />
                     </div>
                     <div class="release-link-block">
-                        <a href="https://github.com/tabu-hr/tabu-app/wiki/Release-notes" target="_blank" rel="noopener noreferrer" class="release-notes-link">Release notes</a>
+                        <a
+                            href="https://github.com/tabu-hr/tabu-app/wiki/Release-notes"
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            class="release-notes-link"
+                            >Release notes</a
+                        >
                     </div>
                 </div>
             </div>
@@ -122,7 +137,8 @@ export default defineComponent({
         min-width: unset;
         gap: 4px;
     }
-    .version-block, .release-link-block {
+    .version-block,
+    .release-link-block {
         text-align: right;
         width: auto;
     }
@@ -130,4 +146,4 @@ export default defineComponent({
         display: none;
     }
 }
-</style> 
+</style>

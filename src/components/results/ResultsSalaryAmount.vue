@@ -14,10 +14,16 @@ export default defineComponent({
 
 <template>
     <div class="salaries-amount-container">
-        <p class="salaries-amount-number" id="amount-of-salaries">{{ dataAmount }}</p>
+        <p class="salaries-amount-number" id="amount-of-salaries">
+            {{ dataAmount }}
+        </p>
         <p class="salaries-amount-label">salaries in this filter</p>
-        <p class="salaries-amount-note">Modify the filters to change the salaries you're compared to.</p>
-        <p class="salaries-amount-refresh-note"><strong>NOTE:</strong> Data is refreshed every 5 minutes.</p>
+        <p class="salaries-amount-note">
+            Modify the filters to change the salaries you're compared to.
+        </p>
+        <p class="salaries-amount-refresh-note">
+            <strong>NOTE:</strong> Data is refreshed every 5 minutes.
+        </p>
     </div>
 </template>
 
@@ -86,4 +92,4 @@ export default defineComponent({
         margin-top: 30px;
     }
 }
-</style> 
+</style>

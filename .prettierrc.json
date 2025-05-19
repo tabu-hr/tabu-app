@@ -2,6 +2,8 @@
 {
   "$schema": "https://json.schemastore.org/prettierrc",
   "semi": false,
+  "tabWidth": 4,
+  "trailingComma": "none",
   "singleQuote": true,
   "arrowParens": "avoid"
 }

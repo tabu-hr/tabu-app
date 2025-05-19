@@ -1,20 +1,20 @@
 export interface TechOption {
-    tech: string;
-    amount: number;
+    tech: string
+    amount: number
 }
 
 export interface CountrySalaryOption {
-    country_salary: string;
-    amount: number;
+    country_salary: string
+    amount: number
 }
 
 export interface ContractTypeOption {
-    contract_type: string;
-    amount: number;
+    contract_type: string
+    amount: number
 }
 
 export interface PositionOption {
-    value: string;
-    label: string;
-    isAdditional?: boolean;
-} 
+    value: string
+    label: string
+    isAdditional?: boolean
+}

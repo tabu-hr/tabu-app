@@ -1,16 +1,21 @@
 <script lang="ts">
 import { defineComponent, computed, watch } from 'vue'
-import type { TechOption, CountrySalaryOption, ContractTypeOption, PositionOption } from '@/types/results';
+import type {
+    TechOption,
+    CountrySalaryOption,
+    ContractTypeOption,
+    PositionOption
+} from '@/types/results'
 import Multiselect from 'vue-multiselect'
 
 export interface DropdownOption {
-    value: string;
-    label: string;
+    value: string
+    label: string
 }
 
 export interface CountryMultiselectOption {
-    value: string;
-    label: string;
+    value: string
+    label: string
 }
 
 export default defineComponent({
@@ -64,14 +69,22 @@ export default defineComponent({
             required: true
         }
     },
-    emits: ['update:selectedPosition', 'update:selectedSeniorities', 'update:selectedTech', 'update:countrySalary', 'update:contractType', 'update:selectedCountries', 'update:selectedContractTypes'],
+    emits: [
+        'update:selectedPosition',
+        'update:selectedSeniorities',
+        'update:selectedTech',
+        'update:countrySalary',
+        'update:contractType',
+        'update:selectedCountries',
+        'update:selectedContractTypes'
+    ],
     setup(props, { emit }) {
         const positionsWithoutSeniorities = [
             'Head of team or department',
             'Founder or co-founder',
             'C-suite',
             'Engineering Manager'
-        ];
+        ]
 
         const positionsWithTechnologies = [
             'BI / Data / Database',
@@ -80,24 +93,32 @@ export default defineComponent({
             'Development / QA',
             'Hardware',
             'Sales / Customer Experience'
-        ];
+        ]
 
         const additionalPositionHasSeniorities = computed(() => {
-            return props.additionalPositionData.additional_position_group !== '' && 
-                   !positionsWithoutSeniorities.includes(props.additionalPositionData.additional_position_group);
-        });
+            return (
+                props.additionalPositionData.additional_position_group !== '' &&
+                !positionsWithoutSeniorities.includes(
+                    props.additionalPositionData.additional_position_group
+                )
+            )
+        })
 
         const positionGroupHasTechnologies = (positionGroup: string) => {
-            return positionsWithTechnologies.includes(positionGroup);
-        };
+            return positionsWithTechnologies.includes(positionGroup)
+        }
 
         const userPositionHasTechnologies = computed(() => {
-            return positionGroupHasTechnologies(props.submissionData.position_group);
-        });
+            return positionGroupHasTechnologies(
+                props.submissionData.position_group
+            )
+        })
 
         const additionalPositionHasTechnologies = computed(() => {
-            return positionGroupHasTechnologies(props.additionalPositionData.additional_position_group);
-        });
+            return positionGroupHasTechnologies(
+                props.additionalPositionData.additional_position_group
+            )
+        })
 
         const positionOptions = computed<PositionOption[]>(() => {
             const options: PositionOption[] = [
@@ -109,94 +130,126 @@ export default defineComponent({
                     value: 'other_positions_in_department',
                     label: `All positions in: ${props.submissionData.position_group}`
                 }
-            ];
+            ]
 
             if (props.additionalPositionData.additional_position) {
                 options.push({
                     value: 'additional_position',
                     label: `Additional position: ${props.additionalPositionData.additional_position}`,
                     isAdditional: true
-                });
+                })
             }
 
-            return options;
-        });
+            return options
+        })
 
         // Update watcher for selectedPosition
-        watch(() => props.selectedPosition, (newPosition) => {
-            if (newPosition === 'additional_position') {
-                if (additionalPositionHasSeniorities.value && props.submissionData.seniority === 'N/A') {
-                    emit('update:selectedSeniorities', ['Junior', 'Middle', 'Senior']);
-                } else if (!additionalPositionHasSeniorities.value) {
-                    emit('update:selectedSeniorities', []);
-                }
-                if (!additionalPositionHasTechnologies.value && userPositionHasTechnologies.value) {
-                    emit('update:selectedTech', []);
-                }
-            } else if (newPosition === 'my_position' || newPosition === 'other_positions_in_department') {
-                if (props.submissionData.seniority === 'N/A') {
-                    emit('update:selectedSeniorities', []);
-                } else {
-                    emit('update:selectedSeniorities', [props.submissionData.seniority]);
+        watch(
+            () => props.selectedPosition,
+            newPosition => {
+                if (newPosition === 'additional_position') {
+                    if (
+                        additionalPositionHasSeniorities.value &&
+                        props.submissionData.seniority === 'N/A'
+                    ) {
+                        emit('update:selectedSeniorities', [
+                            'Junior',
+                            'Middle',
+                            'Senior'
+                        ])
+                    } else if (!additionalPositionHasSeniorities.value) {
+                        emit('update:selectedSeniorities', [])
+                    }
+                    if (
+                        !additionalPositionHasTechnologies.value &&
+                        userPositionHasTechnologies.value
+                    ) {
+                        emit('update:selectedTech', [])
+                    }
+                } else if (
+                    newPosition === 'my_position' ||
+                    newPosition === 'other_positions_in_department'
+                ) {
+                    if (props.submissionData.seniority === 'N/A') {
+                        emit('update:selectedSeniorities', [])
+                    } else {
+                        emit('update:selectedSeniorities', [
+                            props.submissionData.seniority
+                        ])
+                    }
                 }
             }
-        });
+        )
 
         const techDropdownOptions = computed<DropdownOption[]>(() => {
             if (!props.hasTechOptions) {
-                return [{ value: 'no_technology', label: 'No technology' }];
+                return [{ value: 'no_technology', label: 'No technology' }]
             }
 
             return props.techOptions.map(tech => ({
                 value: tech.tech,
                 label: tech.tech
-            }));
-        });
+            }))
+        })
 
-        const countryMultiselectOptions = computed<CountryMultiselectOption[]>(() => {
-            return props.countrySalaryOptions.map(country => ({
-                value: country.country_salary,
-                label: country.country_salary
-            }));
-        });
+        const countryMultiselectOptions = computed<CountryMultiselectOption[]>(
+            () => {
+                return props.countrySalaryOptions.map(country => ({
+                    value: country.country_salary,
+                    label: country.country_salary
+                }))
+            }
+        )
 
         const contractDropdownOptions = computed<DropdownOption[]>(() => {
             return props.contracTypeOptions.map(contract => ({
                 value: contract.contract_type,
                 label: contract.contract_type
-            }));
-        });
+            }))
+        })
 
         const toggleSeniority = (seniority: string) => {
-            const index = props.selectedSeniorities.indexOf(seniority);
+            const index = props.selectedSeniorities.indexOf(seniority)
             if (index === -1) {
-                emit('update:selectedSeniorities', [...props.selectedSeniorities, seniority]);
+                emit('update:selectedSeniorities', [
+                    ...props.selectedSeniorities,
+                    seniority
+                ])
             } else {
-                const newSeniorities = [...props.selectedSeniorities];
-                newSeniorities.splice(index, 1);
-                emit('update:selectedSeniorities', newSeniorities);
+                const newSeniorities = [...props.selectedSeniorities]
+                newSeniorities.splice(index, 1)
+                emit('update:selectedSeniorities', newSeniorities)
             }
-        };
+        }
 
         const handleTechUpdate = (value: any) => {
-            emit('update:selectedTech', value.map((item: any) => item.value));
-        };
+            emit(
+                'update:selectedTech',
+                value.map((item: any) => item.value)
+            )
+        }
 
         const handleCountriesUpdate = (value: any) => {
-            emit('update:selectedCountries', value.map((item: any) => item.value));
-        };
+            emit(
+                'update:selectedCountries',
+                value.map((item: any) => item.value)
+            )
+        }
 
         const handleContractTypesUpdate = (value: any) => {
-            emit('update:selectedContractTypes', value.map((item: any) => item.value));
-        };
+            emit(
+                'update:selectedContractTypes',
+                value.map((item: any) => item.value)
+            )
+        }
 
         const showCountryWarning = computed(() => {
-            return props.selectedCountries.length === 0;
-        });
+            return props.selectedCountries.length === 0
+        })
 
         const showContractWarning = computed(() => {
-            return props.selectedContractTypes.length === 0;
-        });
+            return props.selectedContractTypes.length === 0
+        })
 
         return {
             toggleSeniority,
@@ -223,8 +276,22 @@ export default defineComponent({
 
         <div class="filter-row">
             <label for="position" class="filter-label">Position:</label>
-            <select id="position" class="input-field" :value="selectedPosition" @change="$emit('update:selectedPosition', ($event.target as HTMLSelectElement).value)">
-                <option v-for="option in positionOptions" :key="option.value" :value="option.value">
+            <select
+                id="position"
+                class="input-field"
+                :value="selectedPosition"
+                @change="
+                    $emit(
+                        'update:selectedPosition',
+                        ($event.target as HTMLSelectElement).value
+                    )
+                "
+            >
+                <option
+                    v-for="option in positionOptions"
+                    :key="option.value"
+                    :value="option.value"
+                >
                     {{ option.label }}
                 </option>
             </select>
@@ -233,21 +300,45 @@ export default defineComponent({
         <div class="filter-row seniority-row">
             <label class="filter-label">Seniority:</label>
             <div class="seniority-group">
-                <button class="seniority-btn" :class="{ active: selectedSeniorities.includes('Junior') }"
-                    :disabled="(selectedPosition === 'my_position' || selectedPosition === 'other_positions_in_department') ? submissionData.seniority === 'N/A' : !additionalPositionHasSeniorities"
-                    @click="toggleSeniority('Junior')">
+                <button
+                    class="seniority-btn"
+                    :class="{ active: selectedSeniorities.includes('Junior') }"
+                    :disabled="
+                        selectedPosition === 'my_position' ||
+                        selectedPosition === 'other_positions_in_department'
+                            ? submissionData.seniority === 'N/A'
+                            : !additionalPositionHasSeniorities
+                    "
+                    @click="toggleSeniority('Junior')"
+                >
                     Junior
                 </button>
 
-                <button class="seniority-btn" :class="{ active: selectedSeniorities.includes('Middle') }"
-                    :disabled="(selectedPosition === 'my_position' || selectedPosition === 'other_positions_in_department') ? submissionData.seniority === 'N/A' : !additionalPositionHasSeniorities"
-                    @click="toggleSeniority('Middle')">
+                <button
+                    class="seniority-btn"
+                    :class="{ active: selectedSeniorities.includes('Middle') }"
+                    :disabled="
+                        selectedPosition === 'my_position' ||
+                        selectedPosition === 'other_positions_in_department'
+                            ? submissionData.seniority === 'N/A'
+                            : !additionalPositionHasSeniorities
+                    "
+                    @click="toggleSeniority('Middle')"
+                >
                     Middle
                 </button>
 
-                <button class="seniority-btn" :class="{ active: selectedSeniorities.includes('Senior') }"
-                    :disabled="(selectedPosition === 'my_position' || selectedPosition === 'other_positions_in_department') ? submissionData.seniority === 'N/A' : !additionalPositionHasSeniorities"
-                    @click="toggleSeniority('Senior')">
+                <button
+                    class="seniority-btn"
+                    :class="{ active: selectedSeniorities.includes('Senior') }"
+                    :disabled="
+                        selectedPosition === 'my_position' ||
+                        selectedPosition === 'other_positions_in_department'
+                            ? submissionData.seniority === 'N/A'
+                            : !additionalPositionHasSeniorities
+                    "
+                    @click="toggleSeniority('Senior')"
+                >
                     Senior
                 </button>
             </div>
@@ -256,12 +347,31 @@ export default defineComponent({
         <div class="filter-row">
             <label for="technology" class="filter-label">Technology:</label>
             <Multiselect
-                :model-value="selectedTech.map(tech => ({ value: tech, label: tech }))"
+                :model-value="
+                    selectedTech.map(tech => ({ value: tech, label: tech }))
+                "
                 :options="techDropdownOptions"
                 :multiple="true"
-                :disabled="selectedPosition === 'additional_position' ? !additionalPositionHasTechnologies : !hasTechOptions"
-                :class="{ disabled: selectedPosition === 'additional_position' ? !additionalPositionHasTechnologies : !hasTechOptions }"
-                :placeholder="(selectedPosition === 'additional_position' ? !additionalPositionHasTechnologies : !hasTechOptions) ? 'No technology' : 'Select technologies'"
+                :disabled="
+                    selectedPosition === 'additional_position'
+                        ? !additionalPositionHasTechnologies
+                        : !hasTechOptions
+                "
+                :class="{
+                    disabled:
+                        selectedPosition === 'additional_position'
+                            ? !additionalPositionHasTechnologies
+                            : !hasTechOptions
+                }"
+                :placeholder="
+                    (
+                        selectedPosition === 'additional_position'
+                            ? !additionalPositionHasTechnologies
+                            : !hasTechOptions
+                    )
+                        ? 'No technology'
+                        : 'Select technologies'
+                "
                 @update:modelValue="handleTechUpdate"
                 track-by="value"
                 label="label"
@@ -276,7 +386,12 @@ export default defineComponent({
             <label for="countries" class="filter-label">Countries:</label>
             <div class="countries-container">
                 <Multiselect
-                    :model-value="selectedCountries.map(country => ({ value: country, label: country }))"
+                    :model-value="
+                        selectedCountries.map(country => ({
+                            value: country,
+                            label: country
+                        }))
+                    "
                     :options="countryMultiselectOptions"
                     :multiple="true"
                     :placeholder="'Select countries'"
@@ -284,11 +399,14 @@ export default defineComponent({
                     track-by="value"
                     label="label"
                 >
-                    <template #noResult>
-                        No countries found.
-                    </template>
+                    <template #noResult> No countries found. </template>
                 </Multiselect>
-                <p v-if="selectedCountries.length === 0" class="warning-message">At least one country is required.</p>
+                <p
+                    v-if="selectedCountries.length === 0"
+                    class="warning-message"
+                >
+                    At least one country is required.
+                </p>
             </div>
         </div>
 
@@ -296,7 +414,12 @@ export default defineComponent({
             <label for="contract" class="filter-label">Contract:</label>
             <div class="contract-container">
                 <Multiselect
-                    :model-value="selectedContractTypes.map(contract => ({ value: contract, label: contract }))"
+                    :model-value="
+                        selectedContractTypes.map(contract => ({
+                            value: contract,
+                            label: contract
+                        }))
+                    "
                     :options="contractDropdownOptions"
                     :multiple="true"
                     :placeholder="'Select contract types'"
@@ -304,11 +427,14 @@ export default defineComponent({
                     track-by="value"
                     label="label"
                 >
-                    <template #noResult>
-                        No contract types found.
-                    </template>
+                    <template #noResult> No contract types found. </template>
                 </Multiselect>
-                <p v-if="selectedContractTypes.length === 0" class="warning-message">At least one contract type is required.</p>
+                <p
+                    v-if="selectedContractTypes.length === 0"
+                    class="warning-message"
+                >
+                    At least one contract type is required.
+                </p>
             </div>
         </div>
     </div>
@@ -339,7 +465,18 @@ export default defineComponent({
     padding: 8px;
     border: none;
     background-color: white;
-    font-family: Matter, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+    font-family:
+        Matter,
+        -apple-system,
+        BlinkMacSystemFont,
+        'Segoe UI',
+        Roboto,
+        Oxygen,
+        Ubuntu,
+        Cantarell,
+        'Open Sans',
+        'Helvetica Neue',
+        sans-serif;
 }
 
 .filters-title {
@@ -351,11 +488,11 @@ export default defineComponent({
 .filter-label {
     display: block;
     margin-top: 10px;
-    color: #6D6D6D;
+    color: #6d6d6d;
 }
 
 .input-field.disabled {
-    background-color: #f5F7EE;
+    background-color: #f5f7ee;
     color: #969694;
     box-shadow: inset 0 0 0 1px #969694;
     border-radius: 3px;
@@ -382,7 +519,18 @@ export default defineComponent({
     border-radius: 3px;
     background-color: white;
     cursor: pointer;
-    font-family: Matter, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+    font-family:
+        Matter,
+        -apple-system,
+        BlinkMacSystemFont,
+        'Segoe UI',
+        Roboto,
+        Oxygen,
+        Ubuntu,
+        Cantarell,
+        'Open Sans',
+        'Helvetica Neue',
+        sans-serif;
 }
 
 .seniority-btn:nth-child(2) {
@@ -396,7 +544,7 @@ export default defineComponent({
 }
 
 .seniority-btn:disabled {
-    background-color: #f5F7EE;
+    background-color: #f5f7ee;
     cursor: not-allowed;
     color: #969694;
     box-shadow: inset 0 0 0 1px #969694;
@@ -476,12 +624,12 @@ export default defineComponent({
         padding: 2px 6px;
         font-size: 12px;
     }
-    
+
     :deep(.multiselect__tag-icon) {
         width: 16px;
         height: 16px;
     }
-    
+
     :deep(.multiselect__tag-icon:after) {
         font-size: 12px;
     }
@@ -525,13 +673,14 @@ export default defineComponent({
     }
 }
 
-.countries-container, .contract-container {
+.countries-container,
+.contract-container {
     flex: 1;
     width: 100%;
 }
 
 .warning-message {
-    color: #FF9883;
+    color: #ff9883;
     font-size: 12px;
     margin: 0;
     padding: 0 0 0 8px;
@@ -542,7 +691,18 @@ export default defineComponent({
     width: 100%;
     min-height: unset;
     font-weight: 400;
-    font-family: Matter, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+    font-family:
+        Matter,
+        -apple-system,
+        BlinkMacSystemFont,
+        'Segoe UI',
+        Roboto,
+        Oxygen,
+        Ubuntu,
+        Cantarell,
+        'Open Sans',
+        'Helvetica Neue',
+        sans-serif;
 }
 
 :deep(.multiselect:focus) {
@@ -582,7 +742,18 @@ export default defineComponent({
     flex-direction: column;
     gap: 4px;
     font-weight: 400;
-    font-family: Matter, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+    font-family:
+        Matter,
+        -apple-system,
+        BlinkMacSystemFont,
+        'Segoe UI',
+        Roboto,
+        Oxygen,
+        Ubuntu,
+        Cantarell,
+        'Open Sans',
+        'Helvetica Neue',
+        sans-serif;
 }
 
 :deep(.multiselect__input) {
@@ -595,22 +766,55 @@ export default defineComponent({
     background: transparent;
     font-size: inherit;
     font-weight: 400;
-    font-family: Matter, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+    font-family:
+        Matter,
+        -apple-system,
+        BlinkMacSystemFont,
+        'Segoe UI',
+        Roboto,
+        Oxygen,
+        Ubuntu,
+        Cantarell,
+        'Open Sans',
+        'Helvetica Neue',
+        sans-serif;
 }
 
 :deep(.multiselect__input::placeholder) {
-    color: #6D6D6D;
+    color: #6d6d6d;
     font-weight: 400;
-    font-family: Matter, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+    font-family:
+        Matter,
+        -apple-system,
+        BlinkMacSystemFont,
+        'Segoe UI',
+        Roboto,
+        Oxygen,
+        Ubuntu,
+        Cantarell,
+        'Open Sans',
+        'Helvetica Neue',
+        sans-serif;
 }
 
 :deep(.multiselect__placeholder) {
-    color: #6D6D6D;
+    color: #6d6d6d;
     padding: 0;
     margin: 0;
     font-size: inherit;
     font-weight: 400;
-    font-family: Matter, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+    font-family:
+        Matter,
+        -apple-system,
+        BlinkMacSystemFont,
+        'Segoe UI',
+        Roboto,
+        Oxygen,
+        Ubuntu,
+        Cantarell,
+        'Open Sans',
+        'Helvetica Neue',
+        sans-serif;
 }
 
 :deep(.multiselect__content) {
@@ -638,11 +842,22 @@ export default defineComponent({
     transition: background-color 0.2s;
     list-style: none;
     font-weight: 400;
-    font-family: Matter, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+    font-family:
+        Matter,
+        -apple-system,
+        BlinkMacSystemFont,
+        'Segoe UI',
+        Roboto,
+        Oxygen,
+        Ubuntu,
+        Cantarell,
+        'Open Sans',
+        'Helvetica Neue',
+        sans-serif;
 }
 
 :deep(.multiselect__option--highlight) {
-    background: #D9FF80;
+    background: #d9ff80;
     color: #333;
 }
 
@@ -653,7 +868,7 @@ export default defineComponent({
 }
 
 :deep(.multiselect__option--selected.multiselect__option--highlight) {
-    background: #FF9883;
+    background: #ff9883;
     color: #333;
 }
 
@@ -682,7 +897,7 @@ export default defineComponent({
 }
 
 :deep(.multiselect__tag) {
-    background: #D9FF80;
+    background: #d9ff80;
     color: #333;
     padding: 4px 8px;
     margin: 0;
@@ -691,7 +906,18 @@ export default defineComponent({
     align-items: center;
     max-width: calc(100% - 4px);
     font-weight: 400;
-    font-family: Matter, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+    font-family:
+        Matter,
+        -apple-system,
+        BlinkMacSystemFont,
+        'Segoe UI',
+        Roboto,
+        Oxygen,
+        Ubuntu,
+        Cantarell,
+        'Open Sans',
+        'Helvetica Neue',
+        sans-serif;
 }
 
 :deep(.multiselect__tag-icon) {
@@ -711,7 +937,7 @@ export default defineComponent({
     color: #333;
     font-size: 14px;
     line-height: 1;
-    content: "×";
+    content: '×';
 }
 
 :deep(.multiselect__tag-icon:focus),
@@ -730,7 +956,7 @@ export default defineComponent({
 }
 
 :deep(.multiselect.disabled) {
-    background-color: #f5F7EE;
+    background-color: #f5f7ee;
     color: #969694;
     box-shadow: inset 0 0 0 1px #969694;
     border-radius: 3px;
@@ -738,7 +964,7 @@ export default defineComponent({
 }
 
 :deep(.multiselect.disabled .multiselect__tags) {
-    background-color: #f5F7EE;
+    background-color: #f5f7ee;
     box-shadow: inset 0 0 0 1px #969694;
     border-radius: 3px;
 }
@@ -750,4 +976,4 @@ export default defineComponent({
 :deep(.multiselect.disabled .multiselect__input) {
     color: #969694;
 }
-</style> 
+</style>

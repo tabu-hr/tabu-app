@@ -1,6 +1,10 @@
 <template>
     <nav>
-        <img src="/tabu_small_logo_app.svg" alt="Tabu Logo" class="small-logo-app" />
+        <img
+            src="/tabu_small_logo_app.svg"
+            alt="Tabu Logo"
+            class="small-logo-app"
+        />
         <div class="nav-right">
             <button @click="handleLogout" class="logout-button">Logout</button>
         </div>
