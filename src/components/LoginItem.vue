@@ -101,15 +101,21 @@ const callback: CallbackTypes.CredentialCallback = async response => {
                 if (userData.needs_to_update) {
                     // Set the unique_id for the update links
                     userUniqueId.value = userData.unique_id
-                    // If user needs to update, prevent proceeding and show message
+                    // If user needs to update, show message and clear tokens
                     showUpdateRequired.value = true
-                    // Logout the user since they can't proceed
-                    handleLogout()
+                    // Clear tokens but don't redirect
+                    localStorage.removeItem('accessToken')
+                    localStorage.removeItem('refreshToken')
                     return
                 }
             }
 
-            showRegister.value = !resp.response.exists
+            if (!resp.response.exists) {
+                showRegister.value = true
+                router.push('/logout')
+            } else {
+                router.push('/results')
+            }
         })
         .catch(error => {
             console.error('Login error:', error)

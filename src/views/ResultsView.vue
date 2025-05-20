@@ -205,6 +205,8 @@ export default defineComponent({
             }
         })
 
+        const dataLoaded = ref(false)
+
         const updateDataAmount = async () => {
             try {
                 const chosenDepartment = (() => {
@@ -251,12 +253,13 @@ export default defineComponent({
                     chosenContractType == null ||
                     chosenCountrySalary == null
                 ) {
-                    console.warn('Please select all required fields.')
+                    if (dataLoaded.value) {
+                        console.warn('Please select all required fields.')
+                    }
                     dataAmount.value = 0
                     salaryAverage_net.value = 0
                     salaryMedian_net.value = 0
                     return
-                    // throw new Error('Please check required fields')
                 }
                 const api_response = await dataAmountFilterCheck(
                     chosenDepartment,
@@ -398,6 +401,7 @@ export default defineComponent({
                         }
 
                         updateDataAmount()
+                        dataLoaded.value = true
                     } else {
                         console.log('No submission data found')
                     }
@@ -416,21 +420,21 @@ export default defineComponent({
 
         // Add watchers for filter changes
         watch([selectedPosition, selectedSeniorities, selectedTech], () => {
-            updateDataAmount()
+            if (dataLoaded.value) updateDataAmount()
         })
 
         watch(selectedCountries, () => {
-            updateDataAmount()
+            if (dataLoaded.value) updateDataAmount()
         })
 
         watch(selectedContractTypes, () => {
-            updateDataAmount()
+            if (dataLoaded.value) updateDataAmount()
         })
 
         watch(
             () => submissionData.value.contract_type,
             () => {
-                updateDataAmount()
+                if (dataLoaded.value) updateDataAmount()
             }
         )
 
@@ -460,7 +464,8 @@ export default defineComponent({
             diffUserToAverageDisplay,
             diffUserToMedianDisplay,
             logout,
-            updateDataAmount
+            updateDataAmount,
+            dataLoaded
         }
     }
 })

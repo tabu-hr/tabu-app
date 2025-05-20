@@ -33,15 +33,6 @@ async function checkEmail(name: string, email: string, credential: string) {
         )
         // Remove tokens from response data before returning
         delete data.response.tokens
-
-        if (data.success) {
-            if (!data.response.exists) {
-                router.push('/logout')
-                return
-            } else {
-                router.push('/results')
-            }
-        }
     }
 
     return data

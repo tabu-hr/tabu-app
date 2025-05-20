@@ -4,7 +4,7 @@ import { setTokens, logout } from './auth'
 const createApiInstance = () => {
     const instance = axios.create({
         baseURL: import.meta.env.VITE_API_ENDPOINT,
-        timeout: 2000,
+        timeout: 5000,
         headers: { 'X-Custom-Header': 'foobar' }
     })
 
@@ -33,7 +33,7 @@ const createApiInstance = () => {
         },
         async error => {
             const originalRequest = error.config
-            if (error.response.status === 401 && !originalRequest._retry) {
+            if (error.response && error.response.status === 401 && !originalRequest._retry) {
                 originalRequest._retry = true
                 const refreshToken = localStorage.getItem('refreshToken')
                 try {
